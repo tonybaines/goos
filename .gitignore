@@ -1,0 +1,6 @@
+build
+goos.iml
+.gradle
+.idea
+openfire/logs/*.log
+out
