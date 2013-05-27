@@ -6,7 +6,8 @@ class Openfire {
   XMPPServer openfireXmpp
 
   def start() {
-    System.setProperty("openfireHome", "/home/tony/workspace/goos/openfire")
+    def pwd = new File('.').absolutePath
+    System.setProperty("openfireHome", "${pwd}/openfire")
     openfireXmpp = new XMPPServer()
 
     waitForTheAdminPlugin()
