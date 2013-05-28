@@ -7,8 +7,7 @@ import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.Message
 
-import javax.swing.*
-import java.awt.Color
+import java.awt.*
 
 class Main {
   @SuppressWarnings("unused")
@@ -24,10 +23,10 @@ class Main {
   static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE
 
 
-  def ui
+  MainWindow ui
 
   public Main() throws Exception {
-    ui = new MainWindow();
+    ui = new MainWindow()
   }
 
 

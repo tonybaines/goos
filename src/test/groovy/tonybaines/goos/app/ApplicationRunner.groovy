@@ -1,6 +1,6 @@
 package tonybaines.goos.app
 
-import static tonybaines.goos.app.FakeAuctionServer.*
+import static tonybaines.goos.app.FakeAuctionServer.XMPP_HOSTNAME
 
 class ApplicationRunner {
   static final SNIPER_ID = "sniper"
@@ -11,22 +11,22 @@ class ApplicationRunner {
 
     Thread.startDaemon("Test Application") {
       try {
-        Main.main(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.getItemId());
+        Main.main(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.itemId)
       } catch (Exception e) {
-        e.printStackTrace();
+        e.printStackTrace()
       }
     }
 
-    driver = new AuctionSniperDriver(1500);
-    driver.showsSniperStatus(Main.MainWindow.STATUS_JOINING);
+    driver = new AuctionSniperDriver(1500)
+    driver.showsSniperStatus(Main.MainWindow.STATUS_JOINING)
   }
 
   public void showsSniperHasLostAuction() {
-    driver.showsSniperStatus(Main.MainWindow.STATUS_LOST);
+    driver.showsSniperStatus(Main.MainWindow.STATUS_LOST)
   }
 
   public void stop() {
-    driver?.dispose();
+    driver?.dispose()
   }
 
 }

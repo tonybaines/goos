@@ -1,8 +1,9 @@
 package tonybaines.goos.app
 
-import org.jivesoftware.openfire.XMPPServer
+import groovy.util.logging.Log
 import spock.lang.Specification
 
+@Log
 class AuctionSniperEndToEndSpec extends Specification {
   final FakeAuctionServer auction = new FakeAuctionServer("item-54321")
   final ApplicationRunner application = new ApplicationRunner()
