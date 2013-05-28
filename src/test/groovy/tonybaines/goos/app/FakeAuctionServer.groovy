@@ -25,10 +25,6 @@ class FakeAuctionServer {
     this.connection = new XMPPConnection(XMPP_HOSTNAME)
   }
 
-  public String getItemId() {
-    return itemId
-  }
-
 
   private final SingleMessageListener messageListener = new SingleMessageListener()
 
@@ -57,8 +53,7 @@ class FakeAuctionServer {
   }
 
   public class SingleMessageListener implements MessageListener {
-    private final ArrayBlockingQueue<Message> messages =
-      new ArrayBlockingQueue<Message>(1)
+    private final ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<Message>(1)
 
     public void processMessage(Chat chat, Message message) {
       messages.add(message)

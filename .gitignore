@@ -1,6 +1,7 @@
-build
-goos.iml
 .gradle
 .idea
-openfire/logs/*.log
+atlassian-ide-plugin.xml
+build
+goos.iml
+openfire/logs
 out

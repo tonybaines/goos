@@ -1,6 +1,6 @@
 package tonybaines.goos.app
 
-import groovy.transform.CompileStatic
+import groovy.swing.SwingBuilder
 import org.jivesoftware.smack.Chat
 import org.jivesoftware.smack.MessageListener
 import org.jivesoftware.smack.XMPPConnection
@@ -8,6 +8,7 @@ import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.Message
 
 import javax.swing.*
+import java.awt.Color
 
 class Main {
   @SuppressWarnings("unused")
@@ -23,14 +24,10 @@ class Main {
   static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE
 
 
-  MainWindow ui
+  def ui
 
   public Main() throws Exception {
-    SwingUtilities.invokeAndWait(new Runnable() {
-      public void run() {
-        ui = new MainWindow();
-      }
-    })
+    ui = new MainWindow();
   }
 
 
@@ -44,11 +41,9 @@ class Main {
       auctionId(itemId, connection),
       new MessageListener() {
         public void processMessage(Chat aChat, Message message) {
-          SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-              getUi().showStatus(MainWindow.STATUS_LOST) // Access with a getter to bypass odd runtime failure to resolve property
-            }
-          })
+          ui.invokeLater {
+            showStatus(MainWindow.STATUS_LOST)
+          }
         }
       })
     this.notToBeGCd = chat
@@ -67,9 +62,41 @@ class Main {
     return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName())
   }
 
+  static class MainWindow {
+    static final STATUS_JOINING = "JOINING"
+    static final STATUS_LOST = "LOST"
+    static final MAIN_WINDOW_NAME = "Auction Sniper"
+    static final SNIPER_STATUS_NAME = "Sniper Status"
+    def swing = new SwingBuilder()
 
+    public MainWindow() {
+      swing.edt {
+        swing.frame(title: MAIN_WINDOW_NAME, name: MAIN_WINDOW_NAME, id: MAIN_WINDOW_NAME, visible: true, pack: true) {
+          label(
+            id: SNIPER_STATUS_NAME,
+            name: SNIPER_STATUS_NAME,
+            text: STATUS_JOINING,
+            border: lineBorder(color: Color.BLACK))
+        }
+      }
+    }
 
+    // Lookup the status label by ID, then set the new value
+    public void showStatus(String status) {
+      swing[SNIPER_STATUS_NAME].text = status
+    }
 
+    /**
+     * Invoke the supplied closure on the Swing EDT, using 'this'
+     * as its context
+     */
+    public void invokeLater(Closure c) {
+      swing.doLater {
+        c.delegate = this
+        c.call()
+      }
+    }
 
+  }
 }
 
