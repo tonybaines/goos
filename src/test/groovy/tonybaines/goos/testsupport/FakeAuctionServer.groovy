@@ -1,4 +1,4 @@
-package tonybaines.goos.app
+package tonybaines.goos.testsupport
 
 import groovy.util.logging.Log
 import org.jivesoftware.smack.Chat
@@ -15,10 +15,10 @@ import static tonybaines.goos.app.Main.*
 
 @Log
 class FakeAuctionServer {
-  static final String XMPP_HOSTNAME = "localhost"
-  static final AUCTION_PASSWORD = "auction"
+  public static final String XMPP_HOSTNAME = "localhost"
+  private static final AUCTION_PASSWORD = "auction"
   final String itemId
-  final XMPPConnection connection
+  private final XMPPConnection connection
   private Chat currentChat
   private final SingleMessageListener messageListener = new SingleMessageListener()
 

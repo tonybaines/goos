@@ -1,4 +1,4 @@
-package tonybaines.goos.app
+package tonybaines.goos.testsupport
 
 import groovy.util.logging.Log
 import org.jivesoftware.openfire.XMPPServer
@@ -28,7 +28,7 @@ class Openfire {
       try {
         "http://localhost:9090".toURL().text
         return true
-      } catch (Exception e) {
+      } catch (Exception ignored) {
         log.info "Openfire XMPP: Waiting for the admin plugin to initialise"
         sleep 1000
         return false
@@ -38,6 +38,7 @@ class Openfire {
 
   public static void main(String[] args) {
     new Openfire().start()
+    //noinspection GroovyInfiniteLoopStatement
     while (true) sleep(1000)
   }
 }

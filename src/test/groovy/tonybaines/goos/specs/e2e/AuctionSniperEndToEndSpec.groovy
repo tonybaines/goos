@@ -1,7 +1,10 @@
-package tonybaines.goos.app
+package tonybaines.goos.specs.e2e
 
 import groovy.util.logging.Log
 import spock.lang.Specification
+import tonybaines.goos.testsupport.ApplicationRunner
+import tonybaines.goos.testsupport.FakeAuctionServer
+import tonybaines.goos.testsupport.Openfire
 
 @Log
 class AuctionSniperEndToEndSpec extends Specification {

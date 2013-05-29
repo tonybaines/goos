@@ -1,6 +1,8 @@
-package tonybaines.goos.app
+package tonybaines.goos.testsupport
 
-import static tonybaines.goos.app.FakeAuctionServer.XMPP_HOSTNAME
+import tonybaines.goos.app.Main
+
+import static tonybaines.goos.testsupport.FakeAuctionServer.XMPP_HOSTNAME
 
 class ApplicationRunner {
   static final SNIPER_ID = "sniper"
