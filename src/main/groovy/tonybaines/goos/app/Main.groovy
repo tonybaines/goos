@@ -38,17 +38,22 @@ class Main {
   private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
     final Chat chat = connection.getChatManager().createChat(
       auctionId(itemId, connection),
-      new MessageListener() {
-        public void processMessage(Chat aChat, Message message) {
-          ui.invokeLater {
-            showStatus(MainWindow.STATUS_LOST)
-          }
+      newMessageListener {
+        ui.invokeLater {
+          showStatus(MainWindow.STATUS_LOST)
         }
       })
     this.notToBeGCd = chat
     chat.sendMessage(new Message())
   }
 
+  private MessageListener newMessageListener(Closure c) {
+    new MessageListener() {
+      public void processMessage(Chat aChat, Message message) {
+        c.call()
+      }
+    }
+  }
 
   private static XMPPConnection connection(String hostname, String username, String password) throws XMPPException {
     XMPPConnection connection = new XMPPConnection(hostname)

@@ -1,5 +1,6 @@
 package tonybaines.goos.app
 
+import groovy.util.logging.Log
 import org.jivesoftware.smack.Chat
 import org.jivesoftware.smack.ChatManagerListener
 import org.jivesoftware.smack.MessageListener
@@ -12,32 +13,28 @@ import java.util.concurrent.TimeUnit
 
 import static tonybaines.goos.app.Main.*
 
-
+@Log
 class FakeAuctionServer {
   static final String XMPP_HOSTNAME = "localhost"
   static final AUCTION_PASSWORD = "auction"
   final String itemId
   final XMPPConnection connection
   private Chat currentChat
+  private final SingleMessageListener messageListener = new SingleMessageListener()
 
   public FakeAuctionServer(String itemId) {
     this.itemId = itemId
     this.connection = new XMPPConnection(XMPP_HOSTNAME)
   }
 
-
-  private final SingleMessageListener messageListener = new SingleMessageListener()
-
   public void startSellingItem() throws XMPPException {
-    connection.connect()
-    connection.login(String.format(ITEM_ID_AS_LOGIN, itemId), AUCTION_PASSWORD, AUCTION_RESOURCE)
-    connection.getChatManager().addChatListener(
-      new ChatManagerListener() {
-        public void chatCreated(Chat chat, boolean createdLocally) {
-          currentChat = chat
-          chat.addMessageListener(messageListener)
-        }
-      })
+    use(XMPPConnectionHelper) { // Scoped mix-in to make the connection setup more literate
+      connection.connectAs(String.format(ITEM_ID_AS_LOGIN, itemId), AUCTION_PASSWORD, AUCTION_RESOURCE)
+      connection.registerListener { chat, createdLocally ->
+        currentChat = chat
+        chat.addMessageListener(messageListener)
+      }
+    }
   }
 
   public void hasReceivedJoinRequestFromSniper() throws InterruptedException {
@@ -61,6 +58,23 @@ class FakeAuctionServer {
 
     public void receivesAMessage() throws InterruptedException {
       assert messages.poll(5, TimeUnit.SECONDS) != null
+    }
+  }
+
+  @Category(XMPPConnection)
+  public static class XMPPConnectionHelper {
+    static void connectAs(XMPPConnection self, username, password, resource) {
+      self.connect()
+      self.login(username, password, resource)
+    }
+
+    static void registerListener(XMPPConnection self, Closure c) {
+      self.getChatManager().addChatListener(
+        new ChatManagerListener() {
+          public void chatCreated(Chat chat, boolean createdLocally) {
+            c.call(chat, createdLocally)
+          }
+        })
     }
   }
 

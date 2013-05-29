@@ -17,7 +17,7 @@ class ApplicationRunner {
       }
     }
 
-    driver = new AuctionSniperDriver(1500)
+    driver = new AuctionSniperDriver(2000)
     driver.showsSniperStatus(Main.MainWindow.STATUS_JOINING)
   }
 
