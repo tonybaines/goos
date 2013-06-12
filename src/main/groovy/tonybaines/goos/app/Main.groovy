@@ -1,15 +1,22 @@
 package tonybaines.goos.app
 
 import groovy.swing.SwingBuilder
+import groovy.util.logging.Log
 import org.jivesoftware.smack.Chat
 import org.jivesoftware.smack.MessageListener
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.Message
+import tonybaines.goos.AuctionEventListener
+import tonybaines.goos.AuctionMessageTranslator
 
+import javax.swing.JFrame
 import java.awt.*
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 
-class Main {
+@Log
+class Main implements AuctionEventListener {
   @SuppressWarnings("unused")
   private Chat notToBeGCd
 
@@ -21,9 +28,11 @@ class Main {
   static final String AUCTION_RESOURCE = "Auction"
   static final String ITEM_ID_AS_LOGIN = "auction-%s"
   static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE
+  static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;"
+  static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;"
 
 
-  MainWindow ui
+  static MainWindow ui
 
   public Main() throws Exception {
     ui = new MainWindow()
@@ -32,19 +41,29 @@ class Main {
 
   public static void main(String... args) throws Exception {
     Main main = new Main()
-    main.joinAuction(connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]), args[ARG_ITEM_ID])
+    def connection = connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD])
+    ui.disconnectWhenUICloses(connection)
+    main.joinAuction(connection, args[ARG_ITEM_ID])
+  }
+
+  @Override
+  def auctionClosed() {
+    ui.invokeLater {
+      showStatus(MainWindow.STATUS_LOST)
+    }
+  }
+
+  @Override
+  Integer currentPrice(int price, int increment) {
+    throw new UnsupportedOperationException()
   }
 
   private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
     final Chat chat = connection.getChatManager().createChat(
       auctionId(itemId, connection),
-      newMessageListener {
-        ui.invokeLater {
-          showStatus(MainWindow.STATUS_LOST)
-        }
-      })
+      new AuctionMessageTranslator(this))
     this.notToBeGCd = chat
-    chat.sendMessage(new Message())
+    chat.sendMessage(JOIN_COMMAND_FORMAT)
   }
 
   private MessageListener newMessageListener(Closure c) {
@@ -66,9 +85,11 @@ class Main {
     return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName())
   }
 
+  @Log
   static class MainWindow {
-    static final STATUS_JOINING = "JOINING"
-    static final STATUS_LOST = "LOST"
+    static final STATUS_JOINING = "Joining"
+    static final STATUS_LOST = "Lost"
+    static final STATUS_BIDDING = "Bidding"
     static final MAIN_WINDOW_NAME = "Auction Sniper"
     static final SNIPER_STATUS_NAME = "Sniper Status"
     def swing = new SwingBuilder()
@@ -101,6 +122,15 @@ class Main {
       }
     }
 
+    def disconnectWhenUICloses(XMPPConnection connection) {
+      swing[MAIN_WINDOW_NAME].addWindowListener(new WindowAdapter() {
+        @Override
+        void windowClosed(WindowEvent e) {
+          log.info "Shutdown hook called"
+          connection.disconnect()
+        }
+      })
+    }
   }
 }
 

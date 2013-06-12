@@ -10,29 +10,53 @@ import tonybaines.goos.testsupport.Openfire
 class AuctionSniperEndToEndSpec extends Specification {
   final FakeAuctionServer auction = new FakeAuctionServer("item-54321")
   final ApplicationRunner application = new ApplicationRunner()
-  final Openfire openfire = new Openfire()
+  static Openfire openfire = new Openfire()
 
   def "Sniper joins auction until action closes"() {
     when:
     auction.startSellingItem()
     application.startBiddingIn(auction)
     then:
-    auction.hasReceivedJoinRequestFromSniper()
+    auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID)
 
     when:
     auction.announceClosed()
-
     then:
     application.showsSniperHasLostAuction()
   }
 
-  def setup() {
+  def "Sniper makes a higher bid but loses"() throws Exception {
+    when:
+    auction.startSellingItem()
+    application.startBiddingIn(auction)
+    then:
+    auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID)
+    
+    when:
+    auction.reportPrice(1000, 98, "other bidder")
+    then:
+    application.hasShownSniperIsBidding()
+    auction.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID)
+    
+    when:
+    auction.announceClosed()
+    then:
+    application.showsSniperHasLostAuction()
+  }
+
+
+
+  def setupSpec() {
     openfire.start()
   }
 
   def cleanup() {
     auction.stop()
     application.stop()
+    sleep 2000 // TODO: Fix this workaround - really waiting for the window-close hook to fire and the user to disconnect
+  }
+
+  def cleanupSpec() {
     openfire.stop()
   }
 }

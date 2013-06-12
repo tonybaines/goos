@@ -5,6 +5,9 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 
 repositories {
+  flatDir name: 'prod', dirs: 'lib'
+  flatDir name: 'test', dirs: 'test-lib'
+  mavenLocal()
   mavenCentral()
   maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
   maven { url 'https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads' }
@@ -38,5 +41,16 @@ dependencies {
     'tomcat:jasper-compiler:5.5.23',
     'tomcat:jasper-runtime:5.5.23',
   ])
+
+  testRuntime(['junit:junit:4.11'])
 }
 
+task copyToLib(type: Copy) {
+  into "lib"
+  from configurations.runtime
+}
+
+task copyToTestLib(type: Copy) {
+  into "test-lib"
+  from configurations.testRuntime
+}

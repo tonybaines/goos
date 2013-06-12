@@ -1,16 +1,22 @@
 package tonybaines.goos.testsupport
 
 import groovy.util.logging.Log
+import org.hamcrest.Matcher
 import org.jivesoftware.smack.Chat
 import org.jivesoftware.smack.ChatManagerListener
 import org.jivesoftware.smack.MessageListener
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.Message
+import tonybaines.goos.app.Main
 
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 
+import static org.hamcrest.CoreMatchers.equalTo
+import static org.hamcrest.MatcherAssert.assertThat
+
+// aliased to avoid a clash with groovy.lang.is
 import static tonybaines.goos.app.Main.*
 
 @Log
@@ -37,17 +43,32 @@ class FakeAuctionServer {
     }
   }
 
-  public void hasReceivedJoinRequestFromSniper() throws InterruptedException {
-    messageListener.receivesAMessage()
+  public void hasReceivedJoinRequestFrom(bidderId) throws InterruptedException {
+    messageListener.receivesAMessageMatching(bidderId, equalTo(Main.JOIN_COMMAND_FORMAT))
   }
 
   public void announceClosed() throws XMPPException {
-    currentChat.sendMessage(new Message())
+    currentChat.sendMessage("SOLVersion: 1.1; Event: CLOSE;")
+
   }
 
   public void stop() {
     connection.disconnect()
   }
+
+  def reportPrice(int currentBid, int minIncrement, String winningBidderId) {
+    currentChat.sendMessage(String.format("SOLVersion: 1.1; Event: PRICE; CurrentPrice: %d; Increment: %d; Bidder: %s;", currentBid, minIncrement, winningBidderId))
+  }
+
+  def hasReceivedBid(int currentBid, String bidderId) throws InterruptedException {
+    assert currentChat.getParticipant() == bidderId
+    messageListener.receivesAMessageMatching(bidderId, equalTo(String.format(Main.BID_COMMAND_FORMAT, currentBid)))
+  }
+
+
+
+
+
 
   public class SingleMessageListener implements MessageListener {
     private final ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<Message>(1)
@@ -56,8 +77,11 @@ class FakeAuctionServer {
       messages.add(message)
     }
 
-    public void receivesAMessage() throws InterruptedException {
-      assert messages.poll(5, TimeUnit.SECONDS) != null
+    public void receivesAMessageMatching(String bidderId, Matcher<? super String> messageMatcher) throws InterruptedException {
+      def message = messages.poll(5, TimeUnit.SECONDS)
+      assert message != null
+      assert currentChat.participant == bidderId
+      assertThat(message.body, messageMatcher)
     }
   }
 

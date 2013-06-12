@@ -6,6 +6,7 @@ import static tonybaines.goos.testsupport.FakeAuctionServer.XMPP_HOSTNAME
 
 class ApplicationRunner {
   static final SNIPER_ID = "sniper"
+  static final SNIPER_XMPP_ID = "$SNIPER_ID@localhost/Auction"
   static final SNIPER_PASSWORD = "sniper"
   AuctionSniperDriver driver
 
@@ -27,8 +28,11 @@ class ApplicationRunner {
     driver.showsSniperStatus(Main.MainWindow.STATUS_LOST)
   }
 
+  public void hasShownSniperIsBidding() {
+    driver.showsSniperStatus(Main.MainWindow.STATUS_BIDDING)
+  }
+
   public void stop() {
     driver?.dispose()
   }
-
 }
