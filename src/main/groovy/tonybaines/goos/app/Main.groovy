@@ -42,7 +42,9 @@ class Main implements AuctionEventListener {
   public static void main(String... args) throws Exception {
     Main main = new Main()
     def connection = connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD])
-    ui.disconnectWhenUICloses(connection)
+    ui.onClose {
+      connection.disconnect()
+    }
     main.joinAuction(connection, args[ARG_ITEM_ID])
   }
 
@@ -122,12 +124,12 @@ class Main implements AuctionEventListener {
       }
     }
 
-    def disconnectWhenUICloses(XMPPConnection connection) {
+    def onClose(Closure c) {
       swing[MAIN_WINDOW_NAME].addWindowListener(new WindowAdapter() {
         @Override
         void windowClosed(WindowEvent e) {
           log.info "Shutdown hook called"
-          connection.disconnect()
+          c.call()
         }
       })
     }
