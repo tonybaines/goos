@@ -6,6 +6,11 @@ import org.jivesoftware.openfire.XMPPServer
 @Log
 class Openfire {
   XMPPServer openfireXmpp
+  final def requiredUsers
+
+  Openfire(users = []) {
+    this.requiredUsers = users
+  }
 
   def start() {
     log.info "Openfire XMPP: Starting up"
@@ -14,7 +19,20 @@ class Openfire {
     openfireXmpp = new XMPPServer()
 
     waitForTheAdminPlugin()
+
+    recreateRequiredUsers()
+
     log.info "Started"
+  }
+
+  private void recreateRequiredUsers() {
+    def userMgr = openfireXmpp.userManager
+    requiredUsers.each { user ->
+      userMgr.with {
+        deleteUser(getUser(user.name))
+        createUser(user.name, user.pass, '', '')
+      }
+    }
   }
 
   def stop() {

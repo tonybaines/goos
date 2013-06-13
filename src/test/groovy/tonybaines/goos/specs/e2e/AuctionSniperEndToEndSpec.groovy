@@ -10,7 +10,8 @@ import tonybaines.goos.testsupport.Openfire
 class AuctionSniperEndToEndSpec extends Specification {
   final FakeAuctionServer auction = new FakeAuctionServer("item-54321")
   final ApplicationRunner application = new ApplicationRunner()
-  static Openfire openfire = new Openfire()
+  static USERS = [[name:'sniper',pass:'sniper'], [name:'auction-item-54321',pass:'auction']]
+  static Openfire openfire = new Openfire(USERS)
 
   def "Sniper joins auction until action closes"() {
     when:
