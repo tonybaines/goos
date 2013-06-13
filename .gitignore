@@ -4,6 +4,7 @@ goos.iml
 .gradle
 .idea
 lib
+openfire/embedded-db/openfire.log
 openfire/logs
 out
 test-lib/
