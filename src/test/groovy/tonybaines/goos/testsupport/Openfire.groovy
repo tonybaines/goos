@@ -2,6 +2,7 @@ package tonybaines.goos.testsupport
 
 import groovy.util.logging.Log
 import org.jivesoftware.openfire.XMPPServer
+import org.jivesoftware.openfire.cluster.NodeID
 
 @Log
 class Openfire {
@@ -29,7 +30,7 @@ class Openfire {
     def userMgr = openfireXmpp.userManager
     requiredUsers.each { user ->
       userMgr.with {
-        deleteUser(getUser(user.name))
+        try { deleteUser(getUser(user.name)) } catch (ignored){}
         createUser(user.name, user.pass, '', '')
       }
     }
@@ -44,7 +45,7 @@ class Openfire {
   private static void waitForTheAdminPlugin() {
     if(!(1..5).any {
       try {
-        "http://localhost:9090".toURL().text
+        "http://127.0.0.1:9090".toURL().text
         return true
       } catch (Exception ignored) {
         log.info "Openfire XMPP: Waiting for the admin plugin to initialise"

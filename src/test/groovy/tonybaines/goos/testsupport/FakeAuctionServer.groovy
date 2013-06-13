@@ -21,7 +21,7 @@ import static tonybaines.goos.app.Main.*
 
 @Log
 class FakeAuctionServer {
-  public static final String XMPP_HOSTNAME = "localhost"
+  public static final String XMPP_HOSTNAME = "127.0.0.1"
   private static final AUCTION_PASSWORD = "auction"
   final String itemId
   private final XMPPConnection connection

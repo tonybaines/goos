@@ -6,7 +6,7 @@ import static tonybaines.goos.testsupport.FakeAuctionServer.XMPP_HOSTNAME
 
 class ApplicationRunner {
   static final SNIPER_ID = "sniper"
-  static final SNIPER_XMPP_ID = "$SNIPER_ID@localhost/Auction"
+  static final SNIPER_XMPP_ID = "$SNIPER_ID@127.0.0.1/Auction"
   static final SNIPER_PASSWORD = "sniper"
   AuctionSniperDriver driver
 
