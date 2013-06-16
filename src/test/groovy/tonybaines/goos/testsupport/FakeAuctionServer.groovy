@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.hamcrest.MatcherAssert.assertThat
 
-// aliased to avoid a clash with groovy.lang.is
 import static tonybaines.goos.app.Main.*
 
 @Log
