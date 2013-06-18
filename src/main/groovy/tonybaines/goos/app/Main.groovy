@@ -9,6 +9,8 @@ import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.Message
 import tonybaines.goos.AuctionEventListener
 import tonybaines.goos.AuctionMessageTranslator
+import tonybaines.goos.AuctionSniper
+import tonybaines.goos.SniperListener
 
 import javax.swing.JFrame
 import java.awt.*
@@ -16,7 +18,7 @@ import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 
 @Log
-class Main implements AuctionEventListener {
+class Main implements SniperListener {
   @SuppressWarnings("unused")
   private Chat notToBeGCd
 
@@ -49,31 +51,18 @@ class Main implements AuctionEventListener {
   }
 
   @Override
-  def auctionClosed() {
+  void sniperLost() {
     ui.invokeLater {
       showStatus(MainWindow.STATUS_LOST)
     }
   }
 
-  @Override
-  Integer currentPrice(int price, int increment) {
-    throw new UnsupportedOperationException()
-  }
-
   private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
     final Chat chat = connection.getChatManager().createChat(
       auctionId(itemId, connection),
-      new AuctionMessageTranslator(this))
+      new AuctionMessageTranslator(new AuctionSniper(this)))
     this.notToBeGCd = chat
     chat.sendMessage(JOIN_COMMAND_FORMAT)
-  }
-
-  private MessageListener newMessageListener(Closure c) {
-    new MessageListener() {
-      public void processMessage(Chat aChat, Message message) {
-        c.call()
-      }
-    }
   }
 
   private static XMPPConnection connection(String hostname, String username, String password) throws XMPPException {
