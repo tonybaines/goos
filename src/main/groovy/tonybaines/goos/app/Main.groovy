@@ -15,7 +15,7 @@ import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 
 @Log
-class Main implements SniperListener {
+class Main {
   @SuppressWarnings("unused")
   private Chat notToBeGCd
 
@@ -47,26 +47,12 @@ class Main implements SniperListener {
     main.joinAuction(connection, args[ARG_ITEM_ID])
   }
 
-  @Override
-  void sniperLost() {
-    ui.invokeLater {
-      showStatus(MainWindow.STATUS_LOST)
-    }
-  }
-
-  @Override
-  void sniperBidding() {
-    ui.invokeLater {
-      showStatus(MainWindow.STATUS_BIDDING)
-    }
-  }
-
   private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
     final Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection), null)
     this.notToBeGCd = chat
 
     Auction auction = new XMPPAuction(chat)
-    chat.addMessageListener(new AuctionMessageTranslator(new AuctionSniper(auction, this)))
+    chat.addMessageListener(new AuctionMessageTranslator(new AuctionSniper(auction, new SniperStateDisplayer(ui))))
     auction.join()
   }
 
@@ -96,54 +82,6 @@ class Main implements SniperListener {
     @Override
     void join() {
       chat.sendMessage(JOIN_COMMAND_FORMAT)
-    }
-  }
-
-  @Log
-  static class MainWindow {
-    static final STATUS_JOINING = "Joining"
-    static final STATUS_LOST = "Lost"
-    static final STATUS_BIDDING = "Bidding"
-    static final MAIN_WINDOW_NAME = "Auction Sniper"
-    static final SNIPER_STATUS_NAME = "Sniper Status"
-    def swing = new SwingBuilder()
-
-    public MainWindow() {
-      swing.edt {
-        swing.frame(title: MAIN_WINDOW_NAME, name: MAIN_WINDOW_NAME, id: MAIN_WINDOW_NAME, visible: true, pack: true) {
-          label(
-            id: SNIPER_STATUS_NAME,
-            name: SNIPER_STATUS_NAME,
-            text: STATUS_JOINING,
-            border: lineBorder(color: Color.BLACK))
-        }
-      }
-    }
-
-    // Lookup the status label by ID, then set the new value
-    public void showStatus(String status) {
-      swing[SNIPER_STATUS_NAME].text = status
-    }
-
-    /**
-     * Invoke the supplied closure on the Swing EDT, using 'this'
-     * as its context
-     */
-    public void invokeLater(Closure c) {
-      swing.doLater {
-        c.delegate = this
-        c.call()
-      }
-    }
-
-    def onClose(Closure c) {
-      swing[MAIN_WINDOW_NAME].addWindowListener(new WindowAdapter() {
-        @Override
-        void windowClosed(WindowEvent e) {
-          log.info "Shutdown hook called"
-          c.call()
-        }
-      })
     }
   }
 }

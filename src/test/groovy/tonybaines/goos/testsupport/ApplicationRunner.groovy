@@ -1,6 +1,7 @@
 package tonybaines.goos.testsupport
 
 import tonybaines.goos.app.Main
+import tonybaines.goos.app.MainWindow
 
 import static tonybaines.goos.testsupport.FakeAuctionServer.XMPP_HOSTNAME
 
@@ -21,15 +22,15 @@ class ApplicationRunner {
     }
 
     driver = new AuctionSniperDriver(2000)
-    driver.showsSniperStatus(Main.MainWindow.STATUS_JOINING)
+    driver.showsSniperStatus(MainWindow.STATUS_JOINING)
   }
 
   public void showsSniperHasLostAuction() {
-    driver.showsSniperStatus(Main.MainWindow.STATUS_LOST)
+    driver.showsSniperStatus(MainWindow.STATUS_LOST)
   }
 
   public void hasShownSniperIsBidding() {
-    driver.showsSniperStatus(Main.MainWindow.STATUS_BIDDING)
+    driver.showsSniperStatus(MainWindow.STATUS_BIDDING)
   }
 
   public void stop() {
