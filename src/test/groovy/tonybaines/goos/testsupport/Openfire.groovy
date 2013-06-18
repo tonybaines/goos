@@ -36,6 +36,12 @@ class Openfire {
     }
   }
 
+  boolean hasConnectedUsers() {
+    openfireXmpp?.userManager?.usernames?.any { username ->
+      openfireXmpp?.sessionManager?.getActiveSessionCount(username) > 0
+    }
+  }
+
   def stop() {
     log.info "Openfire XMPP: Shutting down"
     try {

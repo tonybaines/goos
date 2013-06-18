@@ -54,7 +54,7 @@ class AuctionSniperEndToEndSpec extends Specification {
   def cleanup() {
     auction.stop()
     application.stop()
-    sleep 2000 // TODO: Fix this workaround - really waiting for the window-close hook to fire and the user to disconnect
+    while(openfire.hasConnectedUsers()){sleep 100}
   }
 
   def cleanupSpec() {
