@@ -2,7 +2,7 @@ package tonybaines.goos
 
 interface AuctionEventListener {
 
-  def auctionClosed()
+  void auctionClosed()
 
-  Integer currentPrice(int price, int increment)
+  void currentPrice(int price, int increment)
 }

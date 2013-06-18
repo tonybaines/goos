@@ -3,16 +3,13 @@ package tonybaines.goos.app
 import groovy.swing.SwingBuilder
 import groovy.util.logging.Log
 import org.jivesoftware.smack.Chat
-import org.jivesoftware.smack.MessageListener
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
-import org.jivesoftware.smack.packet.Message
-import tonybaines.goos.AuctionEventListener
+import tonybaines.goos.Auction
 import tonybaines.goos.AuctionMessageTranslator
 import tonybaines.goos.AuctionSniper
 import tonybaines.goos.SniperListener
 
-import javax.swing.JFrame
 import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -57,12 +54,20 @@ class Main implements SniperListener {
     }
   }
 
+  @Override
+  void sniperBidding() {
+    ui.invokeLater {
+      showStatus(MainWindow.STATUS_BIDDING)
+    }
+  }
+
   private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
-    final Chat chat = connection.getChatManager().createChat(
-      auctionId(itemId, connection),
-      new AuctionMessageTranslator(new AuctionSniper(this)))
+    final Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection), null)
     this.notToBeGCd = chat
-    chat.sendMessage(JOIN_COMMAND_FORMAT)
+
+    Auction auction = new XMPPAuction(chat)
+    chat.addMessageListener(new AuctionMessageTranslator(new AuctionSniper(auction, this)))
+    auction.join()
   }
 
   private static XMPPConnection connection(String hostname, String username, String password) throws XMPPException {
@@ -74,6 +79,24 @@ class Main implements SniperListener {
 
   private static String auctionId(String itemId, XMPPConnection connection) {
     return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName())
+  }
+
+  static class XMPPAuction implements Auction {
+    private final Chat chat
+
+    XMPPAuction(Chat chat) {
+      this.chat = chat
+    }
+
+    @Override
+    void bid(int newPrice) {
+      chat.sendMessage(String.format(BID_COMMAND_FORMAT, newPrice))
+    }
+
+    @Override
+    void join() {
+      chat.sendMessage(JOIN_COMMAND_FORMAT)
+    }
   }
 
   @Log

@@ -1,18 +1,22 @@
 package tonybaines.goos
 
 class AuctionSniper implements AuctionEventListener {
+  private final Auction auction
   private final SniperListener listener
 
-  AuctionSniper(SniperListener listener) {
+  AuctionSniper(Auction auction, SniperListener listener) {
+    this.auction = auction
     this.listener = listener
   }
 
-  def auctionClosed() {
+  @Override
+  void auctionClosed() {
     listener.sniperLost()
   }
 
   @Override
-  Integer currentPrice(int price, int increment) {
-    return null  //To change body of implemented methods use File | Settings | File Templates.
+  void currentPrice(int price, int increment) {
+    auction.bid(price + increment)
+    listener.sniperBidding()
   }
 }

@@ -59,7 +59,7 @@ class FakeAuctionServer {
     currentChat.sendMessage(String.format("SOLVersion: 1.1; Event: PRICE; CurrentPrice: %d; Increment: %d; Bidder: %s;", currentBid, minIncrement, winningBidderId))
   }
 
-  def hasReceivedBid(int currentBid, String bidderId) throws InterruptedException {
+  public void hasReceivedBid(int currentBid, String bidderId) throws InterruptedException {
     assert currentChat.getParticipant() == bidderId
     messageListener.receivesAMessageMatching(bidderId, equalTo(String.format(Main.BID_COMMAND_FORMAT, currentBid)))
   }
@@ -68,11 +68,12 @@ class FakeAuctionServer {
 
 
 
-
+  @Log
   public class SingleMessageListener implements MessageListener {
     private final ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<Message>(1)
 
     public void processMessage(Chat chat, Message message) {
+      log.info "Received message: ${message.body}"
       messages.add(message)
     }
 
