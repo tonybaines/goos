@@ -4,7 +4,7 @@ import org.jivesoftware.smack.Chat
 import org.jivesoftware.smack.MessageListener
 import org.jivesoftware.smack.packet.Message
 
-class AuctionMessageTranslator implements MessageListener{
+class AuctionMessageTranslator implements MessageListener {
 
   private final AuctionEventListener listener
 
@@ -14,45 +14,40 @@ class AuctionMessageTranslator implements MessageListener{
 
   @Override
   public void processMessage(Chat chat, Message message) {
-    AuctionEvent event = AuctionEvent.from(message.getBody());
-    String eventType = event.type();
-    if ("CLOSE".equals(eventType)) {
-      listener.auctionClosed()
-    }
-    if ("PRICE".equals(eventType)) {
-      listener.currentPrice(event.currentPrice(), event.increment());
-    }
-  }
-  private def unpackEventFrom(Message message) {
-    return message.body.split(';').collectEntries {
-      def (k,v) = it.split(":")
-      [k.trim(), v.trim()]
+    AuctionEvent event = AuctionEvent.from(message.body);
+
+    switch (event.type()) {
+      case "CLOSE":
+        listener.auctionClosed()
+        break
+      case "PRICE":
+        listener.currentPrice(event.currentPrice(), event.increment())
+        break
     }
   }
 
   static class AuctionEvent {
-    private final Map<String, String> fields = new HashMap<String, String>()
-    public String type() { return get("Event") }
-    public int currentPrice() { return getInt("CurrentPrice") }
-    public int increment() { return getInt("Increment") }
-    private int getInt(String fieldName) {
-      return Integer.parseInt(get(fieldName))
+    private final def fields = [:]
+
+    def type() { fields["Event"] }
+
+    def currentPrice() { fields["CurrentPrice"] as Integer }
+
+    def increment() { fields["Increment"] as Integer }
+
+    private void addField(field) {
+      def (k, v) = field.split(":")
+      fields[k.trim()] = v.trim()
     }
-    private String get(String fieldName) { return fields.get(fieldName) }
-    private void addField(String field) {
-      String[] pair = field.split(":")
-      fields.put(pair[0].trim(), pair[1].trim())
-    }
-    static AuctionEvent from(String messageBody) {
-      AuctionEvent event = new AuctionEvent()
-      for (String field : fieldsIn(messageBody)) {
-        event.addField(field)
-      }
+
+    static AuctionEvent from(messageBody) {
+      def event = new AuctionEvent()
+      fieldsIn(messageBody).each { event.addField(it) }
+
       return event
     }
-    static String[] fieldsIn(String messageBody) {
-      return messageBody.split(";");
-    }
+
+    static def fieldsIn(messageBody) { messageBody.split(";") }
   }
 
 

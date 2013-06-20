@@ -38,7 +38,9 @@ class Openfire {
 
   def stop() {
     log.info "Openfire XMPP: Shutting down"
-    openfireXmpp?.stop()
+    try {
+      openfireXmpp?.stop()
+    } catch (NullPointerException ignored){}
     log.info "Openfire XMPP: Shut down"
   }
 
