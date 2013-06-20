@@ -8,7 +8,7 @@ import org.jivesoftware.smack.MessageListener
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.Message
-import tonybaines.goos.app.Main
+import tonybaines.goos.app.XMPPAuction
 
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -43,7 +43,7 @@ class FakeAuctionServer {
   }
 
   public void hasReceivedJoinRequestFrom(bidderId) throws InterruptedException {
-    messageListener.receivesAMessageMatching(bidderId, equalTo(Main.JOIN_COMMAND_FORMAT))
+    messageListener.receivesAMessageMatching(bidderId, equalTo(XMPPAuction.JOIN_COMMAND_FORMAT))
   }
 
   public void announceClosed() throws XMPPException {
@@ -61,7 +61,7 @@ class FakeAuctionServer {
 
   public void hasReceivedBid(int currentBid, String bidderId) throws InterruptedException {
     assert currentChat.getParticipant() == bidderId
-    messageListener.receivesAMessageMatching(bidderId, equalTo(String.format(Main.BID_COMMAND_FORMAT, currentBid)))
+    messageListener.receivesAMessageMatching(bidderId, equalTo(String.format(XMPPAuction.BID_COMMAND_FORMAT, currentBid)))
   }
 
 

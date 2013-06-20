@@ -27,9 +27,6 @@ class Main {
   static final String AUCTION_RESOURCE = "Auction"
   static final String ITEM_ID_AS_LOGIN = "auction-%s"
   static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE
-  static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;"
-  static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;"
-
 
   static MainWindow ui
 
@@ -65,24 +62,6 @@ class Main {
 
   private static String auctionId(String itemId, XMPPConnection connection) {
     return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName())
-  }
-
-  static class XMPPAuction implements Auction {
-    private final Chat chat
-
-    XMPPAuction(Chat chat) {
-      this.chat = chat
-    }
-
-    @Override
-    void bid(int newPrice) {
-      chat.sendMessage(String.format(BID_COMMAND_FORMAT, newPrice))
-    }
-
-    @Override
-    void join() {
-      chat.sendMessage(JOIN_COMMAND_FORMAT)
-    }
   }
 }
 
