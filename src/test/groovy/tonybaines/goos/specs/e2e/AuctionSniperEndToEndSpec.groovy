@@ -45,6 +45,29 @@ class AuctionSniperEndToEndSpec extends Specification {
     application.showsSniperHasLostAuction()
   }
 
+  def "Sniper wins and auction by bidding higher"() {
+    when:
+    auction.startSellingItem()
+    application.startBiddingIn(auction)
+    then:
+    auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID)
+
+    when:
+    auction.reportPrice(1000, 98, "other bidder")
+    then:
+    application.hasShownSniperIsBidding()
+    auction.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID)
+
+    when:
+    auction.reportPrice(1098, 97, ApplicationRunner.SNIPER_XMPP_ID)
+    then:
+    application.hasShownSniperIsWinning()
+
+    when:
+    auction.announceClosed()
+    then:
+    application.showsSniperHasWonAuction()
+  }
 
 
   def setupSpec() {

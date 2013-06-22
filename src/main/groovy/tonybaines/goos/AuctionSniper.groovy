@@ -1,6 +1,10 @@
 package tonybaines.goos
 
+import tonybaines.goos.AuctionEventListener.PriceSource
+import static tonybaines.goos.AuctionEventListener.PriceSource.*
+
 class AuctionSniper implements AuctionEventListener {
+  private boolean isWinning = false
   private final Auction auction
   private final SniperListener listener
 
@@ -11,12 +15,21 @@ class AuctionSniper implements AuctionEventListener {
 
   @Override
   void auctionClosed() {
-    listener.sniperLost()
+    if (isWinning) {
+      listener.sniperWon()
+    } else {
+      listener.sniperLost()
+    }
   }
 
   @Override
-  void currentPrice(int price, int increment) {
-    auction.bid(price + increment)
-    listener.sniperBidding()
+  void currentPrice(int price, int increment, PriceSource source) {
+    isWinning = (source == FromSniper)
+    if (isWinning) {
+      listener.sniperWinning()
+    } else {
+      auction.bid(price + increment)
+      listener.sniperBidding()
+    }
   }
 }

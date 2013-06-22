@@ -11,6 +11,8 @@ import java.awt.event.WindowEvent
 class MainWindow {
   static final STATUS_JOINING = "Joining"
   static final STATUS_LOST = "Lost"
+  static final STATUS_WON = "Won"
+  static final STATUS_WINNING = "Winning"
   static final STATUS_BIDDING = "Bidding"
   static final MAIN_WINDOW_NAME = "Auction Sniper"
   static final SNIPER_STATUS_NAME = "Sniper Status"

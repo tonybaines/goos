@@ -4,11 +4,15 @@ import org.jivesoftware.smack.Chat
 import org.jivesoftware.smack.MessageListener
 import org.jivesoftware.smack.packet.Message
 
+import static tonybaines.goos.AuctionEventListener.PriceSource.*
+
 class AuctionMessageTranslator implements MessageListener {
 
   private final AuctionEventListener listener
+  private final String sniperId
 
-  AuctionMessageTranslator(AuctionEventListener listener) {
+  AuctionMessageTranslator(String sniperId, AuctionEventListener listener) {
+    this.sniperId = sniperId
     this.listener = listener
   }
 
@@ -21,7 +25,7 @@ class AuctionMessageTranslator implements MessageListener {
         listener.auctionClosed()
         break
       case "PRICE":
-        listener.currentPrice(event.currentPrice(), event.increment())
+        listener.currentPrice(event.currentPrice(), event.increment(), event.isFrom(sniperId))
         break
     }
   }
@@ -34,6 +38,13 @@ class AuctionMessageTranslator implements MessageListener {
     def currentPrice() { fields["CurrentPrice"] as Integer }
 
     def increment() { fields["Increment"] as Integer }
+
+    def bidder() { fields["Bidder"] }
+
+    def isFrom(String sniperId) {
+      return sniperId.equals(bidder()) ? FromSniper : FromOtherBidder
+    }
+
 
     private void addField(field) {
       def (k, v) = field.split(":")
