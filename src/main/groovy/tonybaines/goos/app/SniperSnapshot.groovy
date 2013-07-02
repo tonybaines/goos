@@ -6,4 +6,5 @@ import groovy.transform.Immutable
 class SniperSnapshot {
   String itemId
   int lastPrice, lastBid
+  SniperState state
 }

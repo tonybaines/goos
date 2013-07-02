@@ -6,7 +6,9 @@ import javax.swing.table.AbstractTableModel
 
 @ToString(includeNames = true, includeFields = true)
 class SnipersTableModel extends AbstractTableModel {
-  private final static SniperSnapshot STARTING_UP = new SniperSnapshot("", 0, 0)
+
+  private static final STATUS_TEXT = [MainWindow.STATUS_JOINING, MainWindow.STATUS_BIDDING]
+  private final static SniperSnapshot STARTING_UP = new SniperSnapshot("", 0, 0, SniperState.JOINING)
   private def statusText = MainWindow.STATUS_JOINING
   private SniperSnapshot sniperState = STARTING_UP
 
@@ -37,9 +39,9 @@ class SnipersTableModel extends AbstractTableModel {
     fireTableCellUpdated(0, 0)
   }
 
-  void sniperStatusChanged(SniperSnapshot newSniperState, String newStatusText) {
+  void sniperStatusChanged(SniperSnapshot newSniperState) {
     sniperState = newSniperState
-    statusText = newStatusText
+    statusText = STATUS_TEXT[newSniperState.state.ordinal()]
     fireTableRowsUpdated(0, 0)
   }
 

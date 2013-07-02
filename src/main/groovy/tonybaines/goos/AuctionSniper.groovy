@@ -2,6 +2,7 @@ package tonybaines.goos
 
 import tonybaines.goos.AuctionEventListener.PriceSource
 import tonybaines.goos.app.SniperSnapshot
+import tonybaines.goos.app.SniperState
 
 import static tonybaines.goos.AuctionEventListener.PriceSource.*
 
@@ -34,7 +35,7 @@ class AuctionSniper implements AuctionEventListener {
     } else {
       def bid = price + increment
       auction.bid(bid)
-      listener.sniperBidding(new SniperSnapshot(itemId, price, bid))
+      listener.sniperBidding(new SniperSnapshot(itemId, price, bid, SniperState.BIDDING))
     }
   }
 }

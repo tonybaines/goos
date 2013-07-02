@@ -35,7 +35,7 @@ class MainWindow {
   }
 
   public void sniperStatusChanged(SniperSnapshot state, String status) {
-    snipers.sniperStatusChanged(state, status)
+    snipers.sniperStatusChanged(state)
   }
 
   /**

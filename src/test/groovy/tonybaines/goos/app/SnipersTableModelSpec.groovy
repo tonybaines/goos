@@ -21,7 +21,7 @@ class SnipersTableModelSpec extends Specification {
 
     def "setsSniperValuesInColumns"() {
       when:
-      model.sniperStatusChanged(new SniperSnapshot("item id", 555, 666), MainWindow.STATUS_BIDDING)
+      model.sniperStatusChanged(new SniperSnapshot("item id", 555, 666))
 
       then:
       1 * listener.tableChanged {
