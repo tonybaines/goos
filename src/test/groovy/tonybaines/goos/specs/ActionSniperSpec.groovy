@@ -4,14 +4,16 @@ import spock.lang.Specification
 import tonybaines.goos.Auction
 import tonybaines.goos.AuctionSniper
 import tonybaines.goos.SniperListener
+import tonybaines.goos.app.SniperSnapshot
 
 import static tonybaines.goos.AuctionEventListener.PriceSource.FromOtherBidder
 import static tonybaines.goos.AuctionEventListener.PriceSource.FromSniper
 
 class ActionSniperSpec extends Specification {
-  final def sniperListener = Mock(SniperListener);
-  final def auction = Mock(Auction);
-  final def sniper = new AuctionSniper(auction, sniperListener)
+  final String ITEM_ID = "ITEM-TEST-123"
+  final def sniperListener = Mock(SniperListener)
+  final def auction = Mock(Auction)
+  final def sniper = new AuctionSniper(auction, ITEM_ID, sniperListener)
 
   def "reports lost if auction closes immediately"() {
     when:
@@ -25,7 +27,7 @@ class ActionSniperSpec extends Specification {
     when:
     sniper.currentPrice(123, 45, FromOtherBidder)
     then:
-    1 * sniperListener.sniperBidding()
+    1 * sniperListener.sniperBidding(_ as SniperSnapshot)
 
     when:
     sniper.auctionClosed()
@@ -38,7 +40,7 @@ class ActionSniperSpec extends Specification {
     when:
     sniper.currentPrice(123, 45, FromSniper)
     then:
-    sniperListener.sniperBidding()
+    sniperListener.sniperBidding(_ as SniperSnapshot)
     sniperListener.sniperWinning()
 
     when:
@@ -58,7 +60,7 @@ class ActionSniperSpec extends Specification {
 
     then:
     1 * auction.bid(price + increment)
-    1 * sniperListener.sniperBidding()
+    1 * sniperListener.sniperBidding(new SniperSnapshot(ITEM_ID, price, (price+increment)))
   }
 
   def "reports is winning when current price comes from sniper"() {

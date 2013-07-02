@@ -1,6 +1,5 @@
 package tonybaines.goos.app
 
-import groovy.swing.SwingBuilder
 import groovy.util.logging.Log
 import org.jivesoftware.smack.Chat
 import org.jivesoftware.smack.XMPPConnection
@@ -8,11 +7,6 @@ import org.jivesoftware.smack.XMPPException
 import tonybaines.goos.Auction
 import tonybaines.goos.AuctionMessageTranslator
 import tonybaines.goos.AuctionSniper
-import tonybaines.goos.SniperListener
-
-import java.awt.*
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
 
 @Log
 class Main {
@@ -49,7 +43,7 @@ class Main {
     this.notToBeGCd = chat
 
     Auction auction = new XMPPAuction(chat)
-    chat.addMessageListener(new AuctionMessageTranslator(connection.user, new AuctionSniper(auction, new SniperStateDisplayer(ui))))
+    chat.addMessageListener(new AuctionMessageTranslator(connection.user, new AuctionSniper(auction, itemId, new SniperStateDisplayer(ui))))
     auction.join()
   }
 

@@ -18,7 +18,7 @@ class AuctionMessageTranslator implements MessageListener {
 
   @Override
   public void processMessage(Chat chat, Message message) {
-    AuctionEvent event = AuctionEvent.from(message.body);
+    AuctionEvent event = AuctionEvent.from(message.body)
 
     switch (event.type()) {
       case "CLOSE":
@@ -46,8 +46,8 @@ class AuctionMessageTranslator implements MessageListener {
     }
 
 
-    private void addField(field) {
-      def (k, v) = field.split(":")
+    private void addField(String field) {
+      def (k, v) = field.split(':')
       fields[k.trim()] = v.trim()
     }
 

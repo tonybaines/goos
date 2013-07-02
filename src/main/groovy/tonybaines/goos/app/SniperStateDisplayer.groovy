@@ -18,9 +18,9 @@ class SniperStateDisplayer implements SniperListener{
   }
 
   @Override
-  void sniperBidding() {
+  void sniperBidding(SniperSnapshot state) {
     ui.invokeLater {
-      showStatus(MainWindow.STATUS_BIDDING)
+      sniperStatusChanged(state, MainWindow.STATUS_BIDDING)
     }
   }
 

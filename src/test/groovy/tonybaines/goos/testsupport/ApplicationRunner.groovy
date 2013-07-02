@@ -2,6 +2,7 @@ package tonybaines.goos.testsupport
 
 import tonybaines.goos.app.Main
 import tonybaines.goos.app.MainWindow
+import tonybaines.goos.app.SniperSnapshot
 
 import static tonybaines.goos.testsupport.FakeAuctionServer.XMPP_HOSTNAME
 
@@ -10,9 +11,10 @@ class ApplicationRunner {
   static final SNIPER_XMPP_ID = "$SNIPER_ID@127.0.0.1/Auction"
   static final SNIPER_PASSWORD = "sniper"
   AuctionSniperDriver driver
+  String itemId
 
   public void startBiddingIn(final FakeAuctionServer auction) {
-
+    this.itemId = auction.itemId
     Thread.startDaemon("Test Application") {
       try {
         Main.main(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.itemId)
@@ -29,16 +31,16 @@ class ApplicationRunner {
     driver.showsSniperStatus(MainWindow.STATUS_LOST)
   }
 
-  public void showsSniperHasWonAuction() {
-    driver.showsSniperStatus(MainWindow.STATUS_WON)
+  public void showsSniperHasWonAuction(winningBid) {
+    driver.showsSniperStatus(new SniperSnapshot(itemId, winningBid, winningBid), MainWindow.STATUS_WON)
   }
 
-  public void hasShownSniperIsBidding() {
-    driver.showsSniperStatus(MainWindow.STATUS_BIDDING)
+  public void hasShownSniperIsBidding(lastBid, currentBid) {
+    driver.showsSniperStatus(new SniperSnapshot(itemId, lastBid, currentBid), MainWindow.STATUS_BIDDING)
   }
 
-  public void hasShownSniperIsWinning() {
-    driver.showsSniperStatus(MainWindow.STATUS_WINNING)
+  public void hasShownSniperIsWinning(currentBid) {
+    driver.showsSniperStatus(new SniperSnapshot(itemId, currentBid, currentBid), MainWindow.STATUS_WINNING)
   }
 
   public void stop() {

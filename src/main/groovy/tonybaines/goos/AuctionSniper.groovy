@@ -1,14 +1,18 @@
 package tonybaines.goos
 
 import tonybaines.goos.AuctionEventListener.PriceSource
+import tonybaines.goos.app.SniperSnapshot
+
 import static tonybaines.goos.AuctionEventListener.PriceSource.*
 
 class AuctionSniper implements AuctionEventListener {
   private boolean isWinning = false
   private final Auction auction
+  private final String itemId
   private final SniperListener listener
 
-  AuctionSniper(Auction auction, SniperListener listener) {
+  AuctionSniper(Auction auction, String itemId, SniperListener listener) {
+    this.itemId = itemId
     this.auction = auction
     this.listener = listener
   }
@@ -28,8 +32,9 @@ class AuctionSniper implements AuctionEventListener {
     if (isWinning) {
       listener.sniperWinning()
     } else {
-      auction.bid(price + increment)
-      listener.sniperBidding()
+      def bid = price + increment
+      auction.bid(bid)
+      listener.sniperBidding(new SniperSnapshot(itemId, price, bid))
     }
   }
 }

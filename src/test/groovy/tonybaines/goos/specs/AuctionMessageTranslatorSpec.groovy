@@ -8,7 +8,7 @@ import tonybaines.goos.AuctionMessageTranslator
 import tonybaines.goos.testsupport.ApplicationRunner
 
 class AuctionMessageTranslatorSpec extends Specification {
-  static final Chat UNUSED_CHAT = null;
+  static final Chat UNUSED_CHAT = null
   final def listener = Mock(AuctionEventListener)
   final def translator = new AuctionMessageTranslator(ApplicationRunner.SNIPER_ID, listener)
 
