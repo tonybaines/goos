@@ -25,8 +25,8 @@ class MainWindow {
     }
   }
 
-  public void sniperStatusChanged(SniperSnapshot snapshot) {
-    snipers.sniperStatusChanged(snapshot)
+  public void sniperStateChanged(SniperSnapshot snapshot) {
+    snipers.sniperStateChanged(snapshot)
   }
 
   /**

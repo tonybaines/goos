@@ -43,7 +43,7 @@ class Main {
     this.notToBeGCd = chat
 
     Auction auction = new XMPPAuction(chat)
-    chat.addMessageListener(new AuctionMessageTranslator(connection.user, new AuctionSniper(auction, itemId, new SniperStateDisplayer(ui))))
+    chat.addMessageListener(new AuctionMessageTranslator(connection.user, new AuctionSniper(auction, itemId, new SwingThreadSniperListener(ui))))
     auction.join()
   }
 

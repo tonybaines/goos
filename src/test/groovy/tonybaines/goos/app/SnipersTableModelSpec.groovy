@@ -21,7 +21,7 @@ class SnipersTableModelSpec extends Specification {
 
     def "setsSniperValuesInColumns"() {
       when:
-      model.sniperStatusChanged(new SniperSnapshot("item id", 555, 666, SniperState.BIDDING))
+      model.sniperStateChanged(new SniperSnapshot("item id", 555, 666, SniperState.BIDDING))
 
       then:
       1 * listener.tableChanged {
@@ -30,7 +30,7 @@ class SnipersTableModelSpec extends Specification {
       columnEquals(ITEM_IDENTIFIER, "item id")
       columnEquals(LAST_PRICE, 555)
       columnEquals(LAST_BID, 666)
-      columnEquals(SNIPER_STATUS, SnipersTableModel.textFor(SniperState.BIDDING))
+      columnEquals(SNIPER_STATE, SnipersTableModel.textFor(SniperState.BIDDING))
     }
 
     private void columnEquals(column, expected) {

@@ -3,17 +3,17 @@ package tonybaines.goos.app
 import tonybaines.goos.SniperListener
 
 @SuppressWarnings("GroovyAssignabilityCheck")
-class SniperStateDisplayer implements SniperListener{
-  private final Object ui
+class SwingThreadSniperListener implements SniperListener{
+  private final MainWindow ui
 
-  SniperStateDisplayer(ui) {
+  SwingThreadSniperListener(ui) {
     this.ui = ui
   }
 
   @Override
   void sniperStateChanged(SniperSnapshot snapshot) {
     ui.invokeLater {
-      sniperStatusChanged(snapshot)
+      ui.sniperStateChanged(snapshot)
     }
   }
 }
