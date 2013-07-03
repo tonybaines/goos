@@ -1,8 +1,9 @@
 package tonybaines.goos.testsupport
 
 import tonybaines.goos.app.Main
-import tonybaines.goos.app.MainWindow
 import tonybaines.goos.app.SniperSnapshot
+import tonybaines.goos.app.SniperState
+import tonybaines.goos.app.SnipersTableModel
 
 import static tonybaines.goos.testsupport.FakeAuctionServer.XMPP_HOSTNAME
 
@@ -24,23 +25,23 @@ class ApplicationRunner {
     }
 
     driver = new AuctionSniperDriver(2000)
-    driver.showsSniperStatus(MainWindow.STATUS_JOINING)
+    driver.showsSniperStatus(SnipersTableModel.textFor(SniperState.JOINING))
   }
 
   public void showsSniperHasLostAuction() {
-    driver.showsSniperStatus(MainWindow.STATUS_LOST)
+    driver.showsSniperStatus(SnipersTableModel.textFor(SniperState.LOST))
   }
 
   public void showsSniperHasWonAuction(winningBid) {
-    driver.showsSniperStatus(new SniperSnapshot(itemId, winningBid, winningBid), MainWindow.STATUS_WON)
+    driver.showsSniperStatus(new SniperSnapshot(itemId, winningBid, winningBid, SniperState.WON))
   }
 
   public void hasShownSniperIsBidding(lastBid, currentBid) {
-    driver.showsSniperStatus(new SniperSnapshot(itemId, lastBid, currentBid), MainWindow.STATUS_BIDDING)
+    driver.showsSniperStatus(new SniperSnapshot(itemId, lastBid, currentBid, SniperState.BIDDING))
   }
 
   public void hasShownSniperIsWinning(currentBid) {
-    driver.showsSniperStatus(new SniperSnapshot(itemId, currentBid, currentBid), MainWindow.STATUS_WINNING)
+    driver.showsSniperStatus(new SniperSnapshot(itemId, currentBid, currentBid, SniperState.WINNING))
   }
 
   public void stop() {

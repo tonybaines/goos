@@ -6,6 +6,7 @@ import com.objogate.wl.swing.driver.JTableDriver
 import com.objogate.wl.swing.gesture.GesturePerformer
 import tonybaines.goos.app.MainWindow
 import tonybaines.goos.app.SniperSnapshot
+import tonybaines.goos.app.SnipersTableModel
 
 import static com.objogate.wl.swing.matcher.IterableComponentsMatcher.matching
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText
@@ -25,11 +26,11 @@ class AuctionSniperDriver extends JFrameDriver {
       this, named(MainWindow.SNIPERS_TABLE_NAME)).hasCell(withLabelText(statusText))
   }
 
-  public void showsSniperStatus(SniperSnapshot state, String statusText) {
+  public void showsSniperStatus(SniperSnapshot snapshot) {
     def table = new JTableDriver(this)
     table.hasRow(
-      matching(withLabelText(state.itemId), withLabelText(state.lastPrice as String),
-        withLabelText(state.lastBid as String), withLabelText(statusText)))
+      matching(withLabelText(snapshot.itemId), withLabelText(snapshot.lastPrice as String),
+        withLabelText(snapshot.lastBid as String), withLabelText(SnipersTableModel.textFor(snapshot.state))))
   }
 }
 

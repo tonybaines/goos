@@ -11,30 +11,9 @@ class SniperStateDisplayer implements SniperListener{
   }
 
   @Override
-  void sniperLost() {
+  void sniperStateChanged(SniperSnapshot snapshot) {
     ui.invokeLater {
-      showStatus(MainWindow.STATUS_LOST)
-    }
-  }
-
-  @Override
-  void sniperBidding(SniperSnapshot state) {
-    ui.invokeLater {
-      sniperStatusChanged(state, MainWindow.STATUS_BIDDING)
-    }
-  }
-
-  @Override
-  void sniperWinning() {
-    ui.invokeLater {
-      showStatus(MainWindow.STATUS_WINNING)
-    }
-  }
-
-  @Override
-  void sniperWon() {
-    ui.invokeLater {
-      showStatus(MainWindow.STATUS_WON)
+      sniperStatusChanged(snapshot)
     }
   }
 }

@@ -10,11 +10,6 @@ import java.awt.event.WindowEvent
 @Log
 class MainWindow {
   final snipers = new SnipersTableModel()
-  static final STATUS_JOINING = "Joining"
-  static final STATUS_LOST = "Lost"
-  static final STATUS_WON = "Won"
-  static final STATUS_WINNING = "Winning"
-  static final STATUS_BIDDING = "Bidding"
   static final MAIN_WINDOW_NAME = "Auction Sniper"
   static final SNIPERS_TABLE_NAME = "Sniper Status"
   def swing = new SwingBuilder()
@@ -30,12 +25,8 @@ class MainWindow {
     }
   }
 
-  public void showStatus(String status) {
-    snipers.setStatusText(status)
-  }
-
-  public void sniperStatusChanged(SniperSnapshot state, String status) {
-    snipers.sniperStatusChanged(state)
+  public void sniperStatusChanged(SniperSnapshot snapshot) {
+    snipers.sniperStatusChanged(snapshot)
   }
 
   /**

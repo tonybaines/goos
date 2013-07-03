@@ -7,10 +7,10 @@ import javax.swing.table.AbstractTableModel
 @ToString(includeNames = true, includeFields = true)
 class SnipersTableModel extends AbstractTableModel {
 
-  private static final STATUS_TEXT = [MainWindow.STATUS_JOINING, MainWindow.STATUS_BIDDING]
+  private static final STATUS_TEXT = ["Joining", "Bidding", "Winning", "Lost", "Won"]
   private final static SniperSnapshot STARTING_UP = new SniperSnapshot("", 0, 0, SniperState.JOINING)
-  private def statusText = MainWindow.STATUS_JOINING
-  private SniperSnapshot sniperState = STARTING_UP
+  private def statusText = SnipersTableModel.textFor(SniperState.JOINING)
+  private SniperSnapshot snapshot = STARTING_UP
 
   @Override
   int getRowCount() { 1 }
@@ -22,27 +22,25 @@ class SnipersTableModel extends AbstractTableModel {
   def getValueAt(int rowIndex, int columnIndex) {
     switch (Column.at(columnIndex)) {
       case Column.ITEM_IDENTIFIER:
-        return sniperState.itemId
+        return snapshot.itemId
       case Column.LAST_PRICE:
-        return sniperState.lastPrice
+        return snapshot.lastPrice
       case Column.LAST_BID:
-        return sniperState.lastBid
+        return snapshot.lastBid
       case Column.SNIPER_STATUS:
-        return statusText
+        return textFor(snapshot.state)
       default:
         throw new IllegalArgumentException("No column at " + columnIndex)
     }
   }
 
-  def setStatusText = { statusText ->
-    this.statusText = statusText
-    fireTableCellUpdated(0, 0)
+  void sniperStatusChanged(SniperSnapshot newSnapshot) {
+    this.snapshot = newSnapshot
+    fireTableRowsUpdated(0, 0)
   }
 
-  void sniperStatusChanged(SniperSnapshot newSniperState) {
-    sniperState = newSniperState
-    statusText = STATUS_TEXT[newSniperState.state.ordinal()]
-    fireTableRowsUpdated(0, 0)
+  static String textFor(SniperState state) {
+    STATUS_TEXT[state.ordinal()]
   }
 
 }
